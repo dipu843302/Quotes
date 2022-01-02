@@ -12,14 +12,18 @@ class QuoteRepository(val quoteService: QuoteService,
                       private val quoteDatabase: QuoteDatabase
                       ,private val applicationContext: Context) {
 
-    private val quotesLiveData=MutableLiveData<QuoteList>()
+    private val quotesLiveData:MutableLiveData<QuoteList> = MutableLiveData()
 
-    val quotes:LiveData<QuoteList>
-    get() = quotesLiveData
+
+
+    fun getData():LiveData<QuoteList>{
+        return quotesLiveData
+    }
     suspend fun getQuotes(page:Int){
         if (NetworkUtils.isInternetAvailable(applicationContext)){
             val result=quoteService.getQuotes(page)
             if (result?.body()!=null){
+                quoteDatabase.quoteDao().deleteQuotes()
                 quoteDatabase.quoteDao().addQuotes(result.body()!!.results)
                 quotesLiveData.postValue(result.body())
             }
@@ -28,7 +32,6 @@ class QuoteRepository(val quoteService: QuoteService,
             val quoteList=QuoteList(1,1,1,quotes,1,1)
             quotesLiveData.postValue(quoteList)
         }
-
 
     }
 }

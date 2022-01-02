@@ -15,6 +15,5 @@ class MainViewModel(private val repository: QuoteRepository) :ViewModel(){
             repository.getQuotes(1)
         }
     }
-    val quotes:LiveData<QuoteList>
-    get() = repository.quotes
+    fun get() = repository.getData()
 }
